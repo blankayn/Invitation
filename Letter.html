@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Valentine's Day</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff4d6d;
+            --primary-light: #ff8fa3;
+            --secondary: #ffb3c1;
+            --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            font-family: 'Outfit', sans-serif;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Floating Hearts Background */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart-particle {
+            position: absolute;
+            color: var(--primary-light);
+            opacity: 0.6;
+            animation: float 10s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(110vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .image-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(255, 77, 109, 0.15);
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .slideshow {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transform: scale(1.1);
+            transition: opacity 1.5s ease-in-out, transform 3s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .letter-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            min-height: 300px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+            position: relative;
+        }
+
+        .letter-card::before {
+            content: '❤';
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            font-size: 30px;
+            color: var(--primary);
+            text-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);
+        }
+
+        #lyricText {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #444;
+            white-space: pre-wrap;
+            font-weight: 300;
+        }
+
+        .letter-header {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .letter-card {
+                padding: 30px 20px;
+            }
+
+            .letter-header {
+                font-size: 2rem;
+            }
+
+            #lyricText {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <div class="content-wrapper">
+        <div class="image-card">
+            <div class="slideshow" id="slideshow">
+                <img src="802cb6cf-9529-433c-8b18-260f19364bc3.jpg" class="slide active" alt="memory">
+                <img src="a906a351-9158-45c7-9447-529cc8932355.jpg" class="slide" alt="memory">
+                <img src="bae6b31c-0d0a-48e5-9d46-b6213afb7227.jpg" class="slide" alt="memory">
+                <img src="d717083e-443b-4632-bbf1-dbe50caa63d9.jpg" class="slide" alt="memory">
+            </div>
+        </div>
+
+        <div class="letter-card">
+            <span class="letter-header">To My Dearest...</span>
+            <div id="lyricText"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating hearts
+        const heartsContainer = document.getElementById('heartsContainer');
+        const heartIcons = ['❤', '💗', '💖', '💕', '❣'];
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart-particle';
+            heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            heart.style.opacity = Math.random() * 0.5 + 0.3;
+
+            heartsContainer.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 10000);
+        }
+
+        setInterval(createHeart, 400);
+
+        // Advanced Slideshow
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        setInterval(nextSlide, 4500);
+
+        // Typewriter Effect
+        const text = `What: Valentine’s Date 💘
+When: February 15, 2026 | 2:00 PM – 9:00 PM
+Where: Somewhere familiar, but a little more special ✨
+Who: My beautiful baby, Rona 🤍
+
+To my baby—who is wonderful, cute, loving, caring, and the most beautiful girl I know—
+I’m inviting you on a Valentine’s date.
+
+No rush, no pressure—just us.
+Laughing, talking, holding hands, stealing glances, and making memories we’ll smile about later.
+Let me take care of you, spoil you a little, and show you how much you mean to me—from 2 PM until magsawa ta kaka-kiss hahaha`;
+
+        const textContainer = document.getElementById('lyricText');
+        let index = 0;
+
+        function type() {
+            if (index < text.length) {
+                textContainer.innerHTML += text[index];
+                index++;
+
+                // Add a slight variable delay for realism
+                let delay = 35;
+                if (text[index - 1] === '.' || text[index - 1] === '!' || text[index - 1] === '?') delay = 500;
+                if (text[index - 1] === ',') delay = 200;
+
+                setTimeout(type, delay);
+
+                // Keep scrolled to bottom if needed (for mobile)
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        }
+
+        // Start typing after a short delay
+        setTimeout(type, 1500);
+    </script>
+</body>
+
+</html>
