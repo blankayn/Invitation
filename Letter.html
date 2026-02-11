@@ -206,6 +206,34 @@
                 font-size: 1.1rem;
             }
         }
+
+        .game-button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 20px 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.3);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out 0.6s both;
+            font-family: 'Outfit', sans-serif;
+            text-align: center;
+        }
+
+        .game-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 77, 109, 0.5);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+        }
+
+        .game-button:active {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -219,6 +247,7 @@
                 <img src="a906a351-9158-45c7-9447-529cc8932355.jpg" class="slide" alt="memory">
                 <img src="bae6b31c-0d0a-48e5-9d46-b6213afb7227.jpg" class="slide" alt="memory">
                 <img src="d717083e-443b-4632-bbf1-dbe50caa63d9.jpg" class="slide" alt="memory">
+                <img src="5b09552a-f09d-4f90-a636-5259bfc8c09d.jpg" class="slide" alt="memory">
             </div>
         </div>
 
@@ -226,6 +255,8 @@
             <span class="letter-header">To My Dearest...</span>
             <div id="lyricText"></div>
         </div>
+
+        <a href="quiz.html" class="game-button">🎮 Mini Game</a>
     </div>
 
     <script>
@@ -290,9 +321,6 @@ Let me take care of you, spoil you a little, and show you how much you mean to m
                 if (text[index - 1] === ',') delay = 200;
 
                 setTimeout(type, delay);
-
-                // Keep scrolled to bottom if needed (for mobile)
-                window.scrollTo(0, document.body.scrollHeight);
             }
         }
 
