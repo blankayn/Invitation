@@ -29,6 +29,21 @@
             overflow: hidden;
             width: 800px;
             height: 600px;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+
+        @media (max-width: 850px) {
+            #game-container {
+                width: 100vw;
+                height: calc(100vh - 8px);
+                border-radius: 0;
+                border: none;
+            }
+
+            body {
+                padding: 0;
+            }
         }
 
         canvas {
@@ -295,10 +310,29 @@
         const hpHeartsEl = document.getElementById('hp-hearts');
         const mapIndicator = document.getElementById('map-indicator');
 
-        const WIDTH = 800;
-        const HEIGHT = 600;
-        canvas.width = WIDTH;
-        canvas.height = HEIGHT;
+        // Game world dimensions (larger than viewport)
+        const WORLD_WIDTH = 800;
+        const WORLD_HEIGHT = 600;
+        
+        // Viewport dimensions (will be responsive)
+        let WIDTH = 800;
+        let HEIGHT = 600;
+        
+        // Camera offset for following player
+        let cameraX = 0;
+        let cameraY = 0;
+
+        // Initialize canvas size
+        function resizeCanvas() {
+            const container = document.getElementById('game-container');
+            WIDTH = container.clientWidth;
+            HEIGHT = container.clientHeight;
+            canvas.width = WIDTH;
+            canvas.height = HEIGHT;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
         const PLATFORM_Y = 475;
 
@@ -347,11 +381,11 @@
             }
             update() {
                 this.x += this.speed * this.dir;
-                if (this.x < -20 || this.x > WIDTH + 20) this.active = false;
+                if (this.x < -20 || this.x > WORLD_WIDTH + 20) this.active = false;
             }
             draw() {
                 ctx.font = '20px Arial';
-                ctx.fillText('�', this.x, this.y);
+                ctx.fillText('💖', this.x - cameraX, this.y - cameraY);
             }
         }
 
@@ -365,7 +399,7 @@
             }
             reset() {
                 const spawnLeft = Math.random() > 0.5;
-                this.x = spawnLeft ? -100 - Math.random() * 200 : WIDTH + 100 + Math.random() * 200;
+                this.x = spawnLeft ? -100 - Math.random() * 200 : WORLD_WIDTH + 100 + Math.random() * 200;
                 this.y = PLATFORM_Y + 20;
                 this.width = 40;
                 this.height = 30;
@@ -416,11 +450,11 @@
                 const squash = Math.sin(Date.now() / 200 + this.animOffset) * 6;
                 ctx.fillStyle = '#4ae35d';
                 ctx.beginPath();
-                ctx.ellipse(this.x + 20, this.y + 15 + squash / 2, 20, 15 - squash / 2, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x + 20 - cameraX, this.y + 15 + squash / 2 - cameraY, 20, 15 - squash / 2, 0, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = 'white';
-                ctx.fillRect(this.x + 10, this.y + 8, 5, 5);
-                ctx.fillRect(this.x + 25, this.y + 8, 5, 5);
+                ctx.fillRect(this.x + 10 - cameraX, this.y + 8 - cameraY, 5, 5);
+                ctx.fillRect(this.x + 25 - cameraX, this.y + 8 - cameraY, 5, 5);
             }
         }
 
@@ -585,25 +619,35 @@
             if (keys.ArrowRight || keys.d) { player.x += player.speed; player.direction = 1; }
             if (keys.ArrowLeft || keys.a) { player.x -= player.speed; player.direction = -1; }
 
-            if (currentMap === 'map1' && player.x > WIDTH - player.width - 5) {
+            if (currentMap === 'map1' && player.x > WORLD_WIDTH - player.width - 5) {
                 currentMap = 'map2';
                 player.x = 50;
                 mapIndicator.textContent = "MAP: 2";
             } else if (currentMap === 'map2' && player.x < 5) {
                 currentMap = 'map1';
-                player.x = WIDTH - player.width - 10;
+                player.x = WORLD_WIDTH - player.width - 10;
                 mapIndicator.textContent = "MAP: 1";
             }
 
-            player.x = Math.max(0, Math.min(WIDTH - player.width, player.x));
-            playerDOM.style.left = player.x + 'px';
-            playerDOM.style.top = player.y + 'px';
+            player.x = Math.max(0, Math.min(WORLD_WIDTH - player.width, player.x));
+            
+            // Camera follow - center player on screen
+            cameraX = player.x + player.width / 2 - WIDTH / 2;
+            cameraY = player.y + player.height / 2 - HEIGHT / 2;
+            
+            // Clamp camera to world bounds
+            cameraX = Math.max(0, Math.min(WORLD_WIDTH - WIDTH, cameraX));
+            cameraY = Math.max(0, Math.min(WORLD_HEIGHT - HEIGHT, cameraY));
+            
+            // Update DOM sprite positions relative to camera
+            playerDOM.style.left = (player.x - cameraX) + 'px';
+            playerDOM.style.top = (player.y - cameraY) + 'px';
             playerDOM.style.transform = `scaleX(${player.direction})`;
 
             if (currentMap === 'map2') {
                 ronaDOM.style.display = 'block';
-                ronaDOM.style.left = rona.x + 'px';
-                ronaDOM.style.top = rona.y + 'px';
+                ronaDOM.style.left = (rona.x - cameraX) + 'px';
+                ronaDOM.style.top = (rona.y - cameraY) + 'px';
                 if (Math.abs(player.x - rona.x) < 80) {
                     // Start dialog immediately in Map 2 as per user request
                     startDialog([
@@ -626,8 +670,19 @@
         function draw() {
             ctx.clearRect(0, 0, WIDTH, HEIGHT);
             const activeMapImg = maps[currentMap];
-            if (activeMapImg && activeMapImg.complete) ctx.drawImage(activeMapImg, 0, 0, WIDTH, HEIGHT);
-            else { ctx.fillStyle = '#2d1b3e'; ctx.fillRect(0, 0, WIDTH, HEIGHT); }
+            
+            // Draw map with camera offset
+            if (activeMapImg && activeMapImg.complete) {
+                // Draw the visible portion of the map
+                ctx.drawImage(
+                    activeMapImg,
+                    cameraX, cameraY, WIDTH, HEIGHT,  // Source rectangle (what to crop from the map)
+                    0, 0, WIDTH, HEIGHT               // Destination rectangle (where to draw on canvas)
+                );
+            } else { 
+                ctx.fillStyle = '#2d1b3e'; 
+                ctx.fillRect(0, 0, WIDTH, HEIGHT); 
+            }
 
             projectiles.forEach(p => p.draw());
             slimes.forEach(s => s.draw());
